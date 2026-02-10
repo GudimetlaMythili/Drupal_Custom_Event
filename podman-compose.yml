@@ -1,0 +1,129 @@
+# DreamWorks Event Planner - Podman Compose Configuration
+# Compatible with both podman-compose and docker-compose
+#
+# Usage:
+#   podman-compose up -d
+#   podman-compose down
+#   podman-compose logs -f
+
+version: "3.8"
+
+services:
+  drupal:
+    image: docker.io/library/drupal:10-apache
+    container_name: event-planner-drupal
+    hostname: drupal
+    depends_on:
+      db:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    ports:
+      - "8080:80"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
+    networks:
+      - event_planner_network
+    environment:
+      # Database
+      - DRUPAL_DB_HOST=db
+      - DRUPAL_DB_PORT=5432
+      - DRUPAL_DB_NAME=${POSTGRES_DB:-drupal}
+      - DRUPAL_DB_USER=${POSTGRES_USER:-drupal}
+      - DRUPAL_DB_PASSWORD=${POSTGRES_PASSWORD:-drupal}
+      - DRUPAL_HASH_SALT=${DRUPAL_HASH_SALT:-event-planner-salt-change-in-production}
+      # Drupal
+      - DRUPAL_SITE_NAME=DreamWorks Event Planner
+      - DRUPAL_ADMIN_USER=${DRUPAL_ADMIN_USER:-admin}
+      - DRUPAL_ADMIN_PASS=${DRUPAL_ADMIN_PASS:-admin}
+      - DRUPAL_ENABLE_MODULES=event_planner
+      # Email Configuration
+      - MAIL_MODE=${MAIL_MODE:-mailhog}
+      - MAILER_DSN=smtp://mailhog:1025
+      - GMAIL_USER=${GMAIL_USER:-}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
+      - OUTLOOK_USER=${OUTLOOK_USER:-}
+      - OUTLOOK_PASSWORD=${OUTLOOK_PASSWORD:-}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-noreply@dreamworks.local}
+      - SMTP_TLS=${SMTP_TLS:-on}
+      # Proxy
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - NO_PROXY=localhost,127.0.0.1,db,mailhog
+    command: /var/www/html/startup.sh
+    volumes:
+      - ./drupal/modules/custom:/var/www/html/modules/custom:Z
+      - ./drupal/settings.php:/var/www/html/sites/default/settings.php:ro,Z
+      - ./drupal/config/sync:/var/www/html/config/sync:Z
+      - ./drupal/tools:/opt/drupal-tools:ro,Z
+      - ./drupal/startup.sh:/var/www/html/startup.sh:ro,Z
+      - drupal_files:/var/www/html/sites/default/files
+      - drupal_private:/var/www/private
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  db:
+    image: docker.io/library/postgres:15
+    container_name: event-planner-db
+    hostname: db
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - event_planner_network
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-drupal}
+      - POSTGRES_USER=${POSTGRES_USER:-drupal}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-drupal}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-drupal} -d ${POSTGRES_DB:-drupal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mailhog:
+    image: docker.io/mailhog/mailhog:latest
+    container_name: event-planner-mailhog
+    hostname: mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - event_planner_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  event_planner_network:
+    driver: bridge
+
+volumes:
+  db_data:
+    name: event_planner_db_data
+  drupal_files:
+    name: event_planner_drupal_files
+  drupal_private:
+    name: event_planner_drupal_private

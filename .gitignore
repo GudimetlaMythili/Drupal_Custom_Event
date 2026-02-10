@@ -1,0 +1,45 @@
+# DreamWorks Event Planner - Git Ignore
+
+# Environment files (may contain secrets)
+.env.local
+.env.production
+*.local.env
+
+# Keep the example .env
+!.env
+
+# Drupal files (generated at runtime)
+drupal/sites/default/files/
+drupal/sites/default/settings.local.php
+
+# Private files
+drupal/private/
+
+# Composer
+drupal/vendor/
+mailhog/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Podman/Docker
+*.tar
+*.tar.gz
+
+# Temporary files
+tmp/
+temp/
+*.tmp
