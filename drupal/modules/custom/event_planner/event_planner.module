@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_mail().
+ */
+function event_planner_mail(string $key, array &$message, array $params): void {
+  switch ($key) {
+    case 'user_confirmation':
+      $message['subject'] = t('Event registration confirmation: @event', ['@event' => $params['event_name']]);
+      $message['body'][] = t('Hello @name,', ['@name' => $params['full_name']]);
+      $message['body'][] = '';
+      $message['body'][] = t('Thank you for registering for @event.', ['@event' => $params['event_name']]);
+      $message['body'][] = t('Category: @category', ['@category' => $params['category']]);
+      $message['body'][] = t('Event date: @date', ['@date' => $params['event_date']]);
+      $message['body'][] = '';
+      $message['body'][] = t('We look forward to seeing you.');
+      break;
+
+    case 'admin_notification':
+      $message['subject'] = t('New event registration: @event', ['@event' => $params['event_name']]);
+      $message['body'][] = t('A new registration has been received.');
+      $message['body'][] = '';
+      $message['body'][] = t('Name: @name', ['@name' => $params['full_name']]);
+      $message['body'][] = t('Email: @email', ['@email' => $params['email']]);
+      $message['body'][] = t('Category: @category', ['@category' => $params['category']]);
+      $message['body'][] = t('Event date: @date', ['@date' => $params['event_date']]);
+      $message['body'][] = t('Event: @event', ['@event' => $params['event_name']]);
+      $message['body'][] = t('College: @college', ['@college' => $params['college_name']]);
+      $message['body'][] = t('Department: @department', ['@department' => $params['department']]);
+      break;
+  }
+}

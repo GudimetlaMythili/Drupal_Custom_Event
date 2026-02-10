@@ -1,0 +1,147 @@
+<?php
+
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Installer\InstallerKernel;
+
+/**
+ * Implements hook_schema().
+ */
+function event_planner_schema() {
+  $schema['event_planner_events'] = [
+    'description' => 'Stores event definitions for the Event Planner module.',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'registration_start' => [
+        'description' => 'Event registration start timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'registration_end' => [
+        'description' => 'Event registration end timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'event_date' => [
+        'description' => 'Date of the event as a timestamp (start of day).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'event_name' => [
+        'description' => 'Event name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'category' => [
+        'description' => 'Event category.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Created timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'category_date' => ['category', 'event_date'],
+      'registration_window' => ['registration_start', 'registration_end'],
+    ],
+  ];
+
+  $schema['event_planner_registrations'] = [
+    'description' => 'Stores event registration submissions.',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'event_id' => [
+        'description' => 'Referenced event identifier.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'full_name' => [
+        'description' => 'Registrant full name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'email' => [
+        'description' => 'Registrant email address.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'college_name' => [
+        'description' => 'Registrant college name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'department' => [
+        'description' => 'Registrant department.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'category' => [
+        'description' => 'Event category at the time of registration.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'event_date' => [
+        'description' => 'Event date timestamp (start of day).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'event_name' => [
+        'description' => 'Event name at the time of registration.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Submission timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'event_email_date' => ['event_id', 'email', 'event_date'],
+      'event_date_name' => ['event_date', 'event_name'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function event_planner_uninstall() {
+  $schema = \Drupal::database()->schema();
+  foreach (['event_planner_registrations', 'event_planner_events'] as $table) {
+    if ($schema->tableExists($table)) {
+      $schema->dropTable($table);
+    }
+  }
+}
