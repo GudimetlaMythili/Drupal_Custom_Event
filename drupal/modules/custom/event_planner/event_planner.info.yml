@@ -1,0 +1,6 @@
+name: 'Event Planner'
+type: module
+description: 'Provides custom event registration and administration features.'
+core_version_requirement: '^10'
+package: 'DreamWorks'
+configure: event_planner.settings

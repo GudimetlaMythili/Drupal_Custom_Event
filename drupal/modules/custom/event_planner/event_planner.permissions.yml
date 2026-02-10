@@ -1,0 +1,7 @@
+administer event planner:
+  title: 'Administer Event Planner'
+  description: 'Manage Event Planner configuration and events.'
+
+access event registrations overview:
+  title: 'Access Event Registrations Overview'
+  description: 'View and export event registrations.'

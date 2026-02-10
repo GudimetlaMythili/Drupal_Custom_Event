@@ -1,0 +1,17 @@
+event_planner.events_admin:
+  title: 'Event Planner Events'
+  description: 'Create and manage event definitions.'
+  route_name: event_planner.events_admin
+  parent: system.admin_content
+
+event_planner.settings:
+  title: 'Event Planner Settings'
+  description: 'Configure Event Planner notifications.'
+  route_name: event_planner.settings
+  parent: system.admin_config_services
+
+event_planner.registrations_admin:
+  title: 'Event Registrations'
+  description: 'Review and export event registrations.'
+  route_name: event_planner.registrations_admin
+  parent: system.admin_content

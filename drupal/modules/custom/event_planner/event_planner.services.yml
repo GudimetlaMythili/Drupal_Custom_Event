@@ -1,0 +1,8 @@
+services:
+  event_planner.event_repository:
+    class: 'Drupal\event_planner\Repository\EventRepository'
+    arguments: ['@database', '@datetime.time']
+
+  event_planner.email_notifier:
+    class: 'Drupal\event_planner\Service\EmailNotificationService'
+    arguments: ['@plugin.manager.mail', '@config.factory', '@current_user']

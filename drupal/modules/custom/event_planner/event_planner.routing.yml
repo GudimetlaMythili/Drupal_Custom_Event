@@ -1,0 +1,31 @@
+event_planner.registration:
+  path: '/event-planner/register'
+  defaults:
+    _form: 'Drupal\event_planner\Form\EventRegistrationForm'
+    _title: 'Event Registration'
+  requirements:
+    _access: 'TRUE'
+
+event_planner.events_admin:
+  path: '/admin/dreamworks/event-planner/events'
+  defaults:
+    _form: 'Drupal\event_planner\Form\EventConfigForm'
+    _title: 'Manage Events'
+  requirements:
+    _permission: 'administer event planner'
+
+event_planner.settings:
+  path: '/admin/config/dreamworks/event-planner/settings'
+  defaults:
+    _form: 'Drupal\event_planner\Form\EventSettingsForm'
+    _title: 'Event Planner Settings'
+  requirements:
+    _permission: 'administer event planner'
+
+event_planner.registrations_admin:
+  path: '/admin/dreamworks/event-planner/registrations'
+  defaults:
+    _form: 'Drupal\event_planner\Form\RegistrationAdminForm'
+    _title: 'Event Registrations'
+  requirements:
+    _permission: 'access event registrations overview'

@@ -1,0 +1,19 @@
+{
+    "_readme": [
+        "This lock file documents the state of the project dependencies.",
+        "It is intentionally minimal for the Event Planner proof of concept."
+    ],
+    "content-hash": "00000000000000000000000000000000",
+    "packages": [],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^8.1"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
